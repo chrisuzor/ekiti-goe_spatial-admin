@@ -30,37 +30,22 @@ class UserController extends Controller
     }
 
 
-    /**
-     * List User 
-     * @param Nill
-     * @return Array $user
-     * @author Shani Singh
-     */
+
     public function index()
     {
         $users = User::with('roles')->paginate(10);
         return view('users.index', ['users' => $users]);
     }
-    
-    /**
-     * Create User 
-     * @param Nill
-     * @return Array $user
-     * @author Shani Singh
-     */
+
+
     public function create()
     {
         $roles = Role::all();
-       
+
         return view('users.add', ['roles' => $roles]);
     }
 
-    /**
-     * Store User
-     * @param Request $request
-     * @return View Users
-     * @author Shani Singh
-     */
+
     public function store(Request $request)
     {
         // Validations
@@ -89,7 +74,7 @@ class UserController extends Controller
 
             // Delete Any Existing Role
             DB::table('model_has_roles')->where('model_id',$user->id)->delete();
-            
+
             // Assign Role To User
             $user->assignRole($user->role_id);
 
@@ -104,12 +89,7 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Update Status Of User
-     * @param Integer $status
-     * @return List Page With Success
-     * @author Shani Singh
-     */
+
     public function updateStatus($user_id, $status)
     {
         // Validation
@@ -143,12 +123,7 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Edit User
-     * @param Integer $user
-     * @return Collection $user
-     * @author Shani Singh
-     */
+
     public function edit(User $user)
     {
         $roles = Role::all();
@@ -158,12 +133,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Update User
-     * @param Request $request, User $user
-     * @return View Users
-     * @author Shani Singh
-     */
     public function update(Request $request, User $user)
     {
         // Validations
@@ -191,7 +160,7 @@ class UserController extends Controller
 
             // Delete Any Existing Role
             DB::table('model_has_roles')->where('model_id',$user->id)->delete();
-            
+
             // Assign Role To User
             $user->assignRole($user->role_id);
 
@@ -206,12 +175,7 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Delete User
-     * @param User $user
-     * @return Index Users
-     * @author Shani Singh
-     */
+
     public function delete(User $user)
     {
         DB::beginTransaction();
@@ -229,7 +193,7 @@ class UserController extends Controller
     }
 
     /**
-     * Import Users 
+     * Import Users
      * @param Null
      * @return View File
      */
@@ -241,11 +205,11 @@ class UserController extends Controller
     public function uploadUsers(Request $request)
     {
         Excel::import(new UsersImport, $request->file);
-        
+
         return redirect()->route('users.index')->with('success', 'User Imported Successfully');
     }
 
-    public function export() 
+    public function export()
     {
         return Excel::download(new UsersExport, 'users.xlsx');
     }

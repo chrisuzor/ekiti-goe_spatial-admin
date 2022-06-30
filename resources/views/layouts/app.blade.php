@@ -20,6 +20,7 @@
             <div id="content">
 
                 <!-- Topbar -->
+
                 @include('common.header')
                 <!-- End of Topbar -->
 

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Building;
+use App\Models\BuildingUnit;
+use App\Models\Parcel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Rules\MatchOldPassword;
@@ -28,26 +31,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $parcel_count = Parcel::all()->count();
+        $building_count = Building::all()->count();
+        $unit_count = BuildingUnit::all()->count();
+
+        return view('home')->with(compact('parcel_count', 'building_count', 'unit_count'));
     }
 
-    /**
-     * User Profile
-     * @param Nill
-     * @return View Profile
-     * @author Shani Singh
-     */
+
     public function getProfile()
     {
         return view('profile');
     }
 
-    /**
-     * Update Profile
-     * @param $profileData
-     * @return Boolean With Success Message
-     * @author Shani Singh
-     */
+
     public function updateProfile(Request $request)
     {
         #Validations
@@ -59,7 +56,7 @@ class HomeController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             #Update Profile Data
             User::whereId(auth()->user()->id)->update([
                 'first_name' => $request->first_name,
@@ -72,19 +69,14 @@ class HomeController extends Controller
 
             #Return To Profile page with success
             return back()->with('success', 'Profile Updated Successfully.');
-            
+
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());
         }
     }
 
-    /**
-     * Change Password
-     * @param Old Password, New Password, Confirm New Password
-     * @return Boolean With Success Message
-     * @author Shani Singh
-     */
+
     public function changePassword(Request $request)
     {
         $request->validate([
@@ -98,13 +90,13 @@ class HomeController extends Controller
 
             #Update Password
             User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
-            
+
             #Commit Transaction
             DB::commit();
 
             #Return To Profile page with success
             return back()->with('success', 'Password Changed Successfully.');
-            
+
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());
